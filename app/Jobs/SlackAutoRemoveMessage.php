@@ -70,24 +70,39 @@ class SlackAutoRemoveMessage implements ShouldQueue
         {
             // Logging Deleted Message
             $carbonTimestamp = Carbon::make($this->timestamp);
+            $topMessage = $this->slackService->sendMessage(
+                conversation: $this->slack_log_channel,
+                text: "Auto-deleted message from <@{$this->slackUserId}> in <#{$this->channel_id}> :thread:",
+                emoji: "boom",
+            );
+            $threadTimestamp = $topMessage->message->ts;
+            $this->slackService->sendMessage(
+                conversation: $this->slack_log_channel,
+                text: "Message was sent at: {$carbonTimestamp}",
+                emoji: "robot_face",
+                threadTimestamp: $threadTimestamp,
+                username: "Bot - MetaInformation"
+            );
             if(Arr::get($this->blocks, '0.type') === 'rich_text')
             {
-                $this->blocks = [];
                 $this->slackService->sendMessage(
                     conversation: $this->slack_log_channel,
-                    text: "Auto-deleted message from <@{$this->slackUserId}> in <#{$this->channel_id}> at {$carbonTimestamp} :point_down:\n\n> {$this->text}",
-                    emoji: "boom",
+                    text: $this->text,
+                    emoji: "bust_in_silhouette",
+                    threadTimestamp: $threadTimestamp,
+                    username: 'Bot - OriginalMessage',
                 );
             }
             else{
                 Log::debug('SlackAutoRemoveMessage - Bot User Blocks', ['blocks' => $this->blocks]);
                 $this->slackService->sendMessage(
                     conversation: $this->slack_log_channel,
-                    text: "Auto-deleted message from <@{$this->slackUserId}> in <#{$this->channel_id}>  at {$carbonTimestamp} :point_down:",
-                    emoji: "boom",
+                    text: $this->text,
+                    blocks: $this->blocks,
+                    emoji: "robot_face",
+                    threadTimestamp: $threadTimestamp,
+                    username: 'Bot - OriginalMessage'
                 );
-
-                $this->slackService->sendMessage($this->slack_log_channel, $this->text, $this->blocks);
             }
 
             // Ephemerally message the user (if they exist) in the thread (if it exists)

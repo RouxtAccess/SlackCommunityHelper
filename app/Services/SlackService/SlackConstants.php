@@ -6,6 +6,7 @@ namespace App\Services\SlackService;
 use App\Services\Slack\Modals\AppSettings\AutoJoinNewChannelSettingsModal;
 use App\Services\Slack\Modals\AppSettings\InviteHelperSettingsModal;
 use App\Services\Slack\Modals\AppSettings\MessageDeleteLogSettingsModal;
+use App\Services\Slack\Modals\AppSettings\MessageRuleSettingsModal;
 use App\Services\Slack\Modals\AppSettings\MessageUpdateLogSettingsModal;
 use App\Services\Slack\Modals\AppSettings\UserJoinedLogSettingsModal;
 use App\Services\Slack\Modals\AppSettings\UserUpdateLogSettingsModal;
@@ -122,9 +123,9 @@ class SlackConstants
         self::ACTIONS_INPUT_INVITE_HELPER_ENABLED => [InviteHelperSettingsModal::class, 'handleInputEnabledToggle'],
         self::ACTIONS_INPUT_INVITE_HELPER_CHANNEL => [InviteHelperSettingsModal::class, 'handleInputChannel'],
 
-        self::VIEW_TRANSITION_MESSAGE_RULE => [MessageDeleteLogSettingsModal::class, 'openModalInExistingModal'],
-        self::ACTIONS_INPUT_MESSAGE_RULE_ENABLED => [MessageDeleteLogSettingsModal::class, 'handleInputEnabledToggle'],
-        self::ACTIONS_INPUT_MESSAGE_RULE_CHANNEL => [MessageDeleteLogSettingsModal::class, 'handleInputChannel'],
+        self::VIEW_TRANSITION_MESSAGE_RULE => [MessageRuleSettingsModal::class, 'openModalInExistingModal'],
+        self::ACTIONS_INPUT_MESSAGE_RULE_ENABLED => [MessageRuleSettingsModal::class, 'handleInputEnabledToggle'],
+        self::ACTIONS_INPUT_MESSAGE_RULE_CHANNEL => [MessageRuleSettingsModal::class, 'handleInputChannel'],
         self::VIEW_TRANSITION_MESSAGE_RULE_VIEW_THREAD => [ThreadViewModal::class, 'openModalInExistingModal'],
         self::ACTIONS_MESSAGE_RULE_THREAD_DELETE => [ThreadViewModal::class, 'handleDelete'],
         self::VIEW_TRANSITION_MESSAGE_RULE_VIEW_CHANNEL => [ChannelViewModal::class, 'openModalInExistingModal'],
