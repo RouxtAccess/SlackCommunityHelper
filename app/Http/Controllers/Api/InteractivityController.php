@@ -52,87 +52,12 @@ class InteractivityController extends Controller
         Log::debug('SlackInteractivityController - Generic Block Action', ['payload' => $payload]);
         $action_id = $payload->actions[0]->action_id;
 
-        /*****************
-         *  Main App Actions
-         *****************/
-        if($action_id === SlackConstants::ACTIONS_OPEN_APP_HOME_APP_SETTINGS)
+        if(array_key_exists($action_id, SlackConstants::ACTIONS))
         {
-            resolve(AppSettingsModal::class)->openSettingsModal($this->user, $payload->trigger_id);
+            $functionCall = SlackConstants::ACTIONS[$action_id][1];
+            resolve(SlackConstants::ACTIONS[$action_id][0])->$functionCall($this->user, $payload);
             return response('success', 200);
         }
-        if($action_id === SlackConstants::ACTIONS_OPEN_MESSAGE_RULE_VIEW)
-        {
-            resolve(MessageRuleViewModal::class)->openSettingsModal($this->user, $payload->trigger_id);
-            return response('success', 200);
-        }
-
-        /*****************
-         *  Sub View App Setting Transition Pages
-         *****************/
-        if(array_key_exists($action_id, SlackConstants::VIEW_TRANSITIONS))
-        {
-            resolve(SlackConstants::VIEW_TRANSITIONS[$action_id])->openModalInExistingModal($this->user, $payload);
-            return response('success', 200);
-        }
-
-        /*****************
-         *  Auto Join New Channel
-         *****************/
-        if($action_id === SlackConstants::ACTIONS_INPUT_AUTO_JOIN_NEW_CHANNEL_ENABLED)
-        {
-            return resolve(AutoJoinNewChannelSettingsModal::class)->handleInputAutoJoinNewChannelEnabledToggle($this->user, $payload);
-        }
-
-        /*****************
-         *  User Update Log
-         *****************/
-        if($action_id === SlackConstants::ACTIONS_INPUT_USER_UPDATES_ENABLED) {
-            return resolve(UserUpdateLogSettingsModal::class)->handleInputEnabledToggle($this->user, $payload);
-        }
-        if($action_id === SlackConstants::ACTIONS_INPUT_USER_UPDATES_CHANNEL) {
-            return resolve(UserUpdateLogSettingsModal::class)->handleInputChannel($this->user, $payload);
-        }
-
-        /*****************
-         *  New User Log
-         *****************/
-        if($action_id === SlackConstants::ACTIONS_INPUT_USER_JOINED_ENABLED) {
-            return resolve(UserJoinedLogSettingsModal::class)->handleInputEnabledToggle($this->user, $payload);
-        }
-        if($action_id === SlackConstants::ACTIONS_INPUT_USER_JOINED_CHANNEL) {
-            return resolve(UserJoinedLogSettingsModal::class)->handleInputChannel($this->user, $payload);
-        }
-
-        /*****************
-         *  Invite Helper
-         *****************/
-        if($action_id === SlackConstants::ACTIONS_INPUT_INVITE_HELPER_ENABLED) {
-            return resolve(InviteHelperSettingsModal::class)->handleInputEnabledToggle($this->user, $payload);
-        }
-        if($action_id === SlackConstants::ACTIONS_INPUT_INVITE_HELPER_CHANNEL) {
-            return resolve(InviteHelperSettingsModal::class)->handleInputChannel($this->user, $payload);
-        }
-
-        /*****************
-         *  Message Rules
-         *****************/
-        if($action_id === SlackConstants::ACTIONS_INPUT_MESSAGE_RULE_ENABLED) {
-            return resolve(MessageRuleSettingsModal::class)->handleInputEnabledToggle($this->user, $payload);
-        }
-        if($action_id === SlackConstants::ACTIONS_INPUT_MESSAGE_RULE_CHANNEL) {
-            return resolve(MessageRuleSettingsModal::class)->handleInputChannel($this->user, $payload);
-        }
-        if($action_id === SlackConstants::ACTIONS_MESSAGE_RULE_THREAD_DELETE) {
-            return resolve(ThreadViewModal::class)->handleDelete($this->user, $payload);
-        }
-        if($action_id === SlackConstants::ACTIONS_MESSAGE_RULE_CHANNEL_DELETE) {
-            return resolve(ChannelViewModal::class)->handleDelete($this->user, $payload);
-        }
-        if($action_id === SlackConstants::ACTIONS_MESSAGE_RULE_BOT_DELETE) {
-            return resolve(BotViewModal::class)->handleDelete($this->user, $payload);
-        }
-
-
 
         Log::warning('SlackInteractivityController - Uncaught Block Action', ['payload' => $payload]);
 

@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Services\AppHomeService;
+use App\Services\Slack\AppHomeService;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -11,13 +11,13 @@ use App\Models\User;
 
 class MessageRuleViewModal {
 
-    public function openSettingsModal(User $user, string $trigger_id): void
+    public function openSettingsModal(User $user, object $payload): void
     {
         if(!$user->isWorkspaceAdmin())
         {
             return;
         }
-        resolve(SlackService::class)->viewOpen($trigger_id, $this->generateSettingsModal($user));
+        resolve(SlackService::class)->viewOpen($payload->trigger_id, $this->generateSettingsModal($user));
     }
 
     public function updateExistingView(User $user, string $view_id)

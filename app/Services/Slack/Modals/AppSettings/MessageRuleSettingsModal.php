@@ -3,7 +3,7 @@
 namespace App\Services\Slack\Modals\AppSettings;
 
 use App\Models\User;
-use App\Services\AppHomeService;
+use App\Services\Slack\AppHomeService;
 use App\Services\Slack\Modals\AppSettingsModal;
 use App\Services\SlackService;
 use App\Services\SlackService\SlackConstants;
@@ -79,7 +79,8 @@ class MessageRuleSettingsModal {
                         'type' => 'section',
                         'text' =>  [
                             'type' => 'plain_text',
-                            'text' => "Any messages which this feature ends up deleting, will also be logged in a channel of your choosing\nIf you select a private channel, please be sure to invite the app to the channel",
+                            'text' => "Any messages which this feature ends up deleting, will also be logged in a channel of your choosing" .
+                                "\nChannel:",
                         ],
                     ],
                     [

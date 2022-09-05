@@ -9,10 +9,9 @@ use App\Services\SlackService;
 use App\Services\SlackService\SlackConstants;
 use Illuminate\Support\Facades\Log;
 
-class UserUpdateLogSettingsModal {
+class MessageDeleteLogSettingsModal {
 
     use JoinsChannelsFromModal;
-
 
     public function openModalInExistingModal(User $user, object $payload)
     {
@@ -27,7 +26,7 @@ class UserUpdateLogSettingsModal {
     {
         $payload =  [
             'type' => 'modal',
-            'private_metadata' => SlackConstants::VIEW_ID_APP_SETTINGS_USER_UPDATED,
+            'private_metadata' => SlackConstants::VIEW_ID_APP_SETTINGS_MESSAGE_DELETE_LOG,
             'title' => [
                 'type' => 'plain_text',
                 'text' => 'App Settings',
@@ -46,19 +45,19 @@ class UserUpdateLogSettingsModal {
                         'text' =>
                             [
                                 'type' => 'plain_text',
-                                'text' => 'User Update Log',
+                                'text' => 'Message Delete Log',
                             ]
                     ],
                     [
                         'type' => 'section',
                         'text' =>  [
                             'type' => 'plain_text',
-                            'text' => "This will log to the set channel whenever a user changes their name or display name.",
+                            'text' => "This will log to the set channel whenever a message is deleted",
                         ],
                         'accessory' =>
                             [
                                 'type' => 'checkboxes',
-                                'action_id' => SlackConstants::ACTIONS_INPUT_USER_UPDATES_ENABLED,
+                                'action_id' => SlackConstants::ACTIONS_INPUT_MESSAGE_DELETE_LOG_ENABLED,
                                 'options' =>
                                     [
                                         [
@@ -83,10 +82,9 @@ class UserUpdateLogSettingsModal {
                         'type' => 'actions',
                         'elements' =>
                             [
-
                                 [
                                     'type' => 'conversations_select',
-                                    'action_id' => SlackConstants::ACTIONS_INPUT_USER_UPDATES_CHANNEL,
+                                    'action_id' => SlackConstants::ACTIONS_INPUT_MESSAGE_DELETE_LOG_CHANNEL,
                                     'placeholder' =>
                                         [
                                             'type' => 'plain_text',
@@ -112,7 +110,7 @@ class UserUpdateLogSettingsModal {
     public function setDefaults(array &$payload)
     {
 
-        if(tenant()->isUserUpdatedEnabled)
+        if(tenant()->isMessageDeleteLogEnabled)
         {
             $payload['blocks'][2]['accessory']['initial_options'] = [
                 [
@@ -125,16 +123,16 @@ class UserUpdateLogSettingsModal {
                 ],
             ];
         }
-        if(tenant()->userUpdatedChannel !== null)
+        if(tenant()->messageDeleteLogChannel !== null)
         {
-            $payload['blocks'][4]['elements'][0]['initial_conversation'] = tenant()->userUpdatedChannel;
+            $payload['blocks'][4]['elements'][0]['initial_conversation'] = tenant()->messageDeleteLogChannel;
         }
     }
 
 
     public function handleInputEnabledToggle(User $user, object $payload)
     {
-        $existingRule = tenant()->isUserUpdatedEnabled;
+        $existingRule = tenant()->isMessageDeleteLogEnabled;
         $newRule = false;
         if(!empty($payload->actions[0]->selected_options) && $payload->actions[0]?->selected_options[0]?->value === SlackConstants::BOOLEAN_TRUE)
         {
@@ -142,15 +140,15 @@ class UserUpdateLogSettingsModal {
         }
         if($existingRule != $newRule)
         {
-            Log::info('UserUpdateLogModal - Enabled Changed', ['team_id' => tenant()->team_id, 'from' => $existingRule, 'to' => $newRule]);
-            tenant()->forceFill(['isUserUpdatedEnabled' => $newRule])->saveOrFail();
+            Log::info('MessageDeleteLogModal - Enabled Changed', ['from' => $existingRule, 'to' => $newRule]);
+            tenant()->forceFill(['isMessageDeleteLogEnabled' => $newRule])->saveOrFail();
             resolve(AppSettingsModal::class)->updateExistingView($user, $payload->view->root_view_id);
         }
         return response('success', 200);
     }
     public function handleInputChannel(User $user, object $payload)
     {
-        $existingRule = tenant()->userUpdatedChannel;
+        $existingRule = tenant()->messageDeleteLogChannel;
         $newRule = null;
         if($payload->actions[0]->selected_conversation)
         {
@@ -158,13 +156,15 @@ class UserUpdateLogSettingsModal {
         }
         if($existingRule != $newRule)
         {
-            Log::info('UserUpdateLogModal - Channel Changed Changed', ['team_id' => tenant()->team_id, 'from' => $existingRule, 'to' => $newRule]);
-            tenant()->forceFill(['userUpdatedChannel' => $newRule])->saveOrFail();
-
+            Log::info('MessageDeleteLogModal - Channel Changed', ['from' => $existingRule, 'to' => $newRule]);
+            tenant()->forceFill(['messageDeleteLogChannel' => $newRule])->saveOrFail();
             $this->joinChannelAndUpdateViewAccordingly($user, $payload, $newRule);
         }
         return response('success', 200);
     }
+
+
+
 
 
 

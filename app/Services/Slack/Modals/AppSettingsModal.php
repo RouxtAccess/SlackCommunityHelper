@@ -8,13 +8,13 @@ use App\Models\User;
 
 class AppSettingsModal {
 
-    public function openSettingsModal(User $user, string $trigger_id): void
+    public function openSettingsModal(User $user, object $payload): void
     {
         if(!$user->isWorkspaceAdmin())
         {
             return;
         }
-        resolve(SlackService::class)->viewOpen($trigger_id, $this->generateSettingsModal($user));
+        resolve(SlackService::class)->viewOpen($payload->trigger_id, $this->generateSettingsModal($user));
     }
 
     public function updateExistingView(User $user, string $view_id)
@@ -38,11 +38,13 @@ class AppSettingsModal {
             ],
             'blocks' => $this->mergeBlocks([
                 $this->getSettingsHeader(),
-                $this->getAutoJoinNewChannelsSettings(),
                 $this->getUserUpdateSettings(),
                 $this->getUserJoinedSettings(),
+                $this->getMessageDeletedSettings(),
+                $this->getMessageUpdatedSettings(),
                 $this->getInviteHelperSettings(),
-                $this->getChannelRulesSettings(),
+                $this->getAutoJoinNewChannelsSettings(),
+                $this->getMessageRulesSettings(),
             ])
         ];
     }
@@ -117,7 +119,7 @@ class AppSettingsModal {
                 'text' =>
                     [
                         'type' => 'plain_text',
-                        'text' => 'Log username updates to their name or display name',
+                        'text' => 'Log username updates',
                     ],
                 'accessory' =>
                     [
@@ -169,6 +171,78 @@ class AppSettingsModal {
         ];
     }
 
+    public function getMessageDeletedSettings()
+    {
+
+        return [
+            [
+                'type' => 'divider',
+            ],
+            [
+                'type' => 'header',
+                'text' =>
+                    [
+                        'type' => 'plain_text',
+                        'text' => (tenant()->isMessageDeleteLogEnabled ? SlackConstants::ENABLED_EMOJI : SlackConstants::DISABLED_EMOJI) . ' Message Delete Log',
+                    ]
+            ],
+            [
+                'type' => 'section',
+                'text' =>
+                    [
+                        'type' => 'plain_text',
+                        'text' => 'Log all deleted messages',
+                    ],
+                'accessory' =>
+                    [
+                        'type' => 'button',
+                        'action_id' => SlackConstants::VIEW_TRANSITION_MESSAGE_DELETE_LOG,
+                        'text' =>
+                            [
+                                'type' => 'plain_text',
+                                'text' => 'Config',
+                            ]
+                    ],
+            ],
+        ];
+    }
+
+    public function getMessageUpdatedSettings()
+    {
+
+        return [
+            [
+                'type' => 'divider',
+            ],
+            [
+                'type' => 'header',
+                'text' =>
+                    [
+                        'type' => 'plain_text',
+                        'text' => (tenant()->isMessageUpdateLogEnabled ? SlackConstants::ENABLED_EMOJI : SlackConstants::DISABLED_EMOJI) . ' Message Update Log',
+                    ]
+            ],
+            [
+                'type' => 'section',
+                'text' =>
+                    [
+                        'type' => 'plain_text',
+                        'text' => 'Log all edited messages',
+                    ],
+                'accessory' =>
+                    [
+                        'type' => 'button',
+                        'action_id' => SlackConstants::VIEW_TRANSITION_MESSAGE_UPDATE_LOG,
+                        'text' =>
+                            [
+                                'type' => 'plain_text',
+                                'text' => 'Config',
+                            ]
+                    ],
+            ],
+        ];
+    }
+
     public function getInviteHelperSettings()
     {
 
@@ -205,7 +279,7 @@ class AppSettingsModal {
         ];
     }
 
-    public function getChannelRulesSettings()
+    public function getMessageRulesSettings()
     {
 
         return [

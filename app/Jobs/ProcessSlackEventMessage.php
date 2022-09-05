@@ -6,12 +6,14 @@ use App\Models\BotRule;
 use App\Models\ChannelRule;
 use App\Models\ThreadRule;
 use App\Services\SlackService;
+use App\Services\SlackService\SlackInternalConstants;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class ProcessSlackEventMessage implements ShouldQueue
@@ -52,17 +54,18 @@ class ProcessSlackEventMessage implements ShouldQueue
             return;
         if($this->checkForInviteMessage())
             return;
+        if($this->checkForMessageDelete())
+            return;
+        if($this->checkForMessageUpdate())
+            return;
 
-//        if($this->checkForMessageDelete())
-//            return;
-//        if($this->checkForMessageEdits())
-//            return;
         // We don't care about these message types
         if(Arr::get($this->requestData, 'event.type') !== 'message')
             return;
-        if(Arr::get($this->requestData, 'event.subtype') === 'message_changed'
-            || Arr::get($this->requestData, 'event.subtype') === 'message_deleted'
-            || Arr::get($this->requestData, 'event.subtype') === 'event_callback')
+        if(Arr::get($this->requestData, 'event.subtype') === SlackInternalConstants::EVENT_SUBTYPE_MESSAGE_MESSAGE_CHANGED
+            || Arr::get($this->requestData, 'event.subtype') === SlackInternalConstants::EVENT_SUBTYPE_MESSAGE_MESSAGE_DELETED
+            || Arr::get($this->requestData, 'event.subtype') === 'event_callback'
+        )
             return;
 
         if($this->checkForBotMessages())
@@ -93,6 +96,138 @@ class ProcessSlackEventMessage implements ShouldQueue
         }
         return false;
     }
+
+    protected function checkForMessageDelete()
+    {
+        if(
+            !tenant()->isMessageDeleteLogEnabled
+            || Arr::get($this->requestData, 'event.subtype') !== SlackInternalConstants::EVENT_SUBTYPE_MESSAGE_MESSAGE_DELETED
+        )
+        {
+            return false;
+        }
+
+        $eventTimestamp = Carbon::make(Arr::get($this->requestData, 'event.ts'));
+        $previousMessageTimestamp = Carbon::make(Arr::get($this->requestData, 'event.previous_message.ts'));
+        $channel = Arr::get($this->requestData, 'event.channel');
+        Log::debug('MessageProcessing - Logging Message Delete', ['channel' => $channel]);
+
+        $topMessage = $this->slackService->sendMessage(
+            conversation: tenant()->messageDeleteLogChannel,
+            text: "Message Deleted in <#{$channel}> :thread:",
+            emoji: "candle",
+        );
+        $threadTimestamp = $topMessage->message->ts;
+        $username = $this->slack_user_id ? "<@{$this->slack_user_id}>" :  "a bot using the username: ". Arr::get($this->requestData, 'event.previous_message.username');
+        $this->slackService->sendMessage(
+            conversation: tenant()->messageDeleteLogChannel,
+            text: "Delete event happened at: {$eventTimestamp}".
+            "\nOriginal message was sent at: {$previousMessageTimestamp}".
+            "\nOriginal message sent by {$username}" .
+            (Arr::get($this->requestData, 'event.previous_message.thread_ts') !== null ? "\nMessage was in a thread" : ""),
+            emoji: "robot_face",
+            threadTimestamp: $threadTimestamp,
+            username: "Bot - MetaInformation"
+        );
+
+        if(Arr::get($this->requestData, 'event.previous_message.subtype') === SlackInternalConstants::EVENT_SUBTYPE_EVENT_BOT_MESSAGE)
+        {
+            $blocks = Arr::get($this->requestData, 'event.previous_message.blocks', []);
+            $this->slackService->sendMessage(
+                conversation: tenant()->messageDeleteLogChannel,
+                text: Arr::get($this->requestData, 'event.previous_message.text'),
+                blocks: $blocks,
+                emoji: "robot_face",
+                threadTimestamp: $threadTimestamp,
+                username: 'Bot - OriginalMessage'
+            );
+        }
+        else{
+            // This message is from a user, not a bot, We can't recreate `rich_text` blocks so we just have to use the text
+            $this->slackService->sendMessage(
+                conversation: tenant()->messageDeleteLogChannel,
+                text: Arr::get($this->requestData, 'event.previous_message.text'),
+                emoji: "bust_in_silhouette",
+                threadTimestamp: $threadTimestamp,
+                username: 'Bot - OriginalMessage'
+            );
+        }
+        return true;
+    }
+
+    protected function checkForMessageUpdate()
+    {
+        if(
+            !tenant()->isMessageUpdateLogEnabled
+            || Arr::get($this->requestData, 'event.subtype') !== SlackInternalConstants::EVENT_SUBTYPE_MESSAGE_MESSAGE_CHANGED
+        )
+        {
+            return false;
+        }
+        if(Arr::get($this->requestData, 'event.previous_message.blocks') === Arr::get($this->requestData, 'event.message.blocks'))
+        {
+            return false;
+        }
+
+        $eventTimestamp = Carbon::make(Arr::get($this->requestData, 'event.ts'));
+        $previousMessageTimestamp = Carbon::make(Arr::get($this->requestData, 'event.previous_message.ts'));
+        $channel = Arr::get($this->requestData, 'event.channel');
+        Log::debug('MessageProcessing - Logging Message Delete', ['channel' => $channel]);
+
+        $username = $this->slack_user_id ? "<@{$this->slack_user_id}>" :  "a bot using the username: ". Arr::get($this->requestData, 'event.previous_message.username');
+        $topMessage = $this->slackService->sendMessage(
+            conversation: tenant()->messageUpdateLogChannel,
+            text: "Message Edited by {$username} in <#{$channel}> :thread:",
+            emoji: "recycle",
+        );
+        $threadTimestamp = $topMessage->message->ts;
+        $this->slackService->sendMessage(
+            conversation: tenant()->messageUpdateLogChannel,
+            text: "Message Edit event happened at: {$eventTimestamp}".
+            "\nOriginal message was sent at: {$previousMessageTimestamp}" .
+            (Arr::get($this->requestData, 'event.previous_message.thread_ts') !== null ? "\nMessage was in a thread" : ""),
+            emoji: "robot_face",
+            threadTimestamp: $threadTimestamp,
+            username: "Bot - MetaInformation"
+        );
+
+        if(Arr::get($this->requestData, 'event.previous_message.subtype') === SlackInternalConstants::EVENT_SUBTYPE_EVENT_BOT_MESSAGE)
+        {
+            $this->slackService->sendMessage(
+                conversation: tenant()->messageUpdateLogChannel,
+                text: Arr::get($this->requestData, 'event.previous_message.text'),
+                blocks: Arr::get($this->requestData, 'event.previous_message.blocks', []),
+                emoji: "one",
+                threadTimestamp: $threadTimestamp,
+            );
+            $this->slackService->sendMessage(
+                conversation: tenant()->messageUpdateLogChannel,
+                text: Arr::get($this->requestData, 'event.message.text'),
+                blocks: Arr::get($this->requestData, 'event.message.blocks', []),
+                emoji: "two",
+                threadTimestamp: $threadTimestamp,
+            );
+        }
+        else{
+            // This message is from a user, not a bot, We can't recreate `rich_text` blocks so we just have to use the text
+            $this->slackService->sendMessage(
+                conversation: tenant()->messageUpdateLogChannel,
+                text: Arr::get($this->requestData, 'event.previous_message.text'),
+                emoji: "one",
+                threadTimestamp: $threadTimestamp,
+                username: "Bot - Original Message"
+            );
+            $this->slackService->sendMessage(
+                conversation: tenant()->messageUpdateLogChannel,
+                text: Arr::get($this->requestData, 'event.message.text'),
+                emoji: "two",
+                threadTimestamp: $threadTimestamp,
+                username: "Bot - New Message"
+            );
+        }
+        return true;
+    }
+
     protected function checkForBotMessages() : bool
     {
         // Check bot user messages

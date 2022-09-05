@@ -134,6 +134,17 @@ class Workspace extends Model implements Tenant
                         'channel' => null,
                     ],
                 ],
+            'message' =>
+                [
+                    'delete_log' => [
+                        'enabled' => false,
+                        'channel' => null,
+                    ],
+                    'update_log' => [
+                        'enabled' => false,
+                        'channel' => null,
+                    ],
+                ],
             'rules' =>
                 [
                     'enabled' => false,
@@ -212,6 +223,54 @@ class Workspace extends Model implements Tenant
                 return ($this->$parameter ?? ($this->data->user->new_user_joined->channel ?? null));
             },
             set: fn (string $value) => ['data->user->new_user_joined->channel' => $value,],
+        );
+    }
+
+    /*****************
+     *  Message Delete Log
+     *****************/
+    protected function isMessageDeleteLogEnabled(): Attribute
+    {
+        return Attribute::make(
+            get: function (){
+                $parameter = 'data->message->delete_log->enabled';
+                return (bool) ($this->$parameter ?? ($this->data->message->delete_log->enabled ?? false));
+            },
+            set: fn (bool $value) => ['data->message->delete_log->enabled' => $value,],
+        );
+    }
+    protected function messageDeleteLogChannel(): Attribute
+    {
+        return Attribute::make(
+            get: function (){
+                $parameter = 'data->message->delete_log->channel';
+                return ($this->$parameter ?? ($this->data->message->delete_log->channel ?? null));
+            },
+            set: fn (string $value) => ['data->message->delete_log->channel' => $value,],
+        );
+    }
+
+    /*****************
+     *  Message Update Log
+     *****************/
+    protected function isMessageUpdateLogEnabled(): Attribute
+    {
+        return Attribute::make(
+            get: function (){
+                $parameter = 'data->message->update_log->enabled';
+                return (bool) ($this->$parameter ?? ($this->data->message->update_log->enabled ?? false));
+            },
+            set: fn (bool $value) => ['data->message->update_log->enabled' => $value,],
+        );
+    }
+    protected function messageUpdateLogChannel(): Attribute
+    {
+        return Attribute::make(
+            get: function (){
+                $parameter = 'data->message->update_log->channel';
+                return ($this->$parameter ?? ($this->data->message->update_log->channel ?? null));
+            },
+            set: fn (string $value) => ['data->message->update_log->channel' => $value,],
         );
     }
 

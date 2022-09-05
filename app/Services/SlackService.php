@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Requests\Api\EventsRequest;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -37,6 +38,45 @@ class SlackService {
         return $this->get($endpoint, $payload);
     }
 
+    public function getConversationAll(bool $exclude_archived = true, string $types = 'public_channel,private_channel'): Collection
+    {
+        Log::debug('SlackService - Getting All Conversations...');
+        $conversations = collect();
+        $cursor = null;
+        while(true)
+        {
+            $data = $this->getConversationList(cursor: $cursor, exclude_archived: $exclude_archived, limit: 200, types: $types);
+            foreach($data->channels as $channel)
+            {
+                $conversations->push($channel);
+            }
+            $cursor = $data?->response_metadata?->next_cursor ?? null;
+            if(!$cursor)
+            {
+                break;
+            }
+        }
+        return $conversations;
+    }
+
+    public function getConversationList(string $cursor = null, bool $exclude_archived = true, int $limit = 100, string $types ='public_channel,private_channel,mpim,im') : object
+    {
+        Log::debug('SlackService - Getting List of Conversations...', ['cursor' => $cursor, 'exclude_archived' => $exclude_archived, 'limit' => $limit, 'types' => $types]);
+
+        $endpoint = 'conversations.list';
+        $payload = [
+            'exclude_archived' => $exclude_archived,
+            'limit' => $limit,
+            'types' => $types,
+        ];
+        if($cursor !== null)
+        {
+            $payload['cursor'] = $cursor;
+        }
+
+        return $this->get($endpoint, $payload);
+    }
+
     public function getConversationInfo(string $channel) : object
     {
         Log::debug('SlackService - Getting info from Conversation...', ['channel' => $channel]);
@@ -51,11 +91,37 @@ class SlackService {
 
     public function conversationJoin(string $channel) : object
     {
-        Log::debug('SlackService - Joining Conversations...', ['channel' => $channel]);
+        Log::debug('SlackService - Joining Conversation...', ['channel' => $channel]);
 
         $endpoint = 'conversations.join';
         $payload = [
             'channel' => $channel,
+        ];
+
+        return $this->post($endpoint, $payload);
+    }
+
+    public function conversationCreate(string $channelName, bool $is_private = false) : object
+    {
+        Log::debug('SlackService - Creating Conversation...', ['channelName' => $channelName]);
+
+        $endpoint = 'conversations.create';
+        $payload = [
+            'name' => $channelName,
+            'is_private' => $is_private,
+        ];
+
+        return $this->post($endpoint, $payload);
+    }
+
+    public function conversationInvite(string $channel, string $users) : object
+    {
+        Log::debug('SlackService - Inviting Users to Conversation...', ['channel' => $channel, 'users' => $users]);
+
+        $endpoint = 'conversations.invite';
+        $payload = [
+            'channel' => $channel,
+            'users' => $users,
         ];
 
         return $this->post($endpoint, $payload);

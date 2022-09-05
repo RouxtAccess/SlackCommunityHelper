@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Slack;
 
+use App\Services\SlackService;
 use App\Services\SlackService\SlackConstants;
 use App\Models\User;
 
@@ -86,13 +87,22 @@ class AppHomeService {
                 'elements' => [
                     [
                         'type' => 'button',
+                        'action_id' => SlackConstants::ACTIONS_OPEN_INITIAL_HELPER,
+                        'text' => [
+                            'type' => 'plain_text',
+                            'text' => ':one: Initial Setup',
+                            'emoji' => true,
+                        ]
+                    ],
+                    [
+                        'type' => 'button',
                         'action_id' => SlackConstants::ACTIONS_OPEN_APP_HOME_APP_SETTINGS,
                         'text' => [
                             'type' => 'plain_text',
                             'text' => ':gear:️App Settings',
                             'emoji' => true,
                         ]
-                    ]
+                    ],
                 ]
             ],
         ];

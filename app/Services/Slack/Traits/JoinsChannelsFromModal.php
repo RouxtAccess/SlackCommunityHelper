@@ -18,7 +18,6 @@ trait JoinsChannelsFromModal
         $failedToJoinMessage = false;
         if($convoInfo->ok !== true)
         {
-
             Log::debug((new ReflectionClass(static::class))->getShortName() . ' - Unable to join Channel (Private)');
             $failedToJoinMessage = true;
         }

@@ -5,12 +5,16 @@ namespace App\Services\SlackService;
 
 use App\Services\Slack\Modals\AppSettings\AutoJoinNewChannelSettingsModal;
 use App\Services\Slack\Modals\AppSettings\InviteHelperSettingsModal;
-use App\Services\Slack\Modals\AppSettings\MessageRuleSettingsModal;
+use App\Services\Slack\Modals\AppSettings\MessageDeleteLogSettingsModal;
+use App\Services\Slack\Modals\AppSettings\MessageUpdateLogSettingsModal;
 use App\Services\Slack\Modals\AppSettings\UserJoinedLogSettingsModal;
 use App\Services\Slack\Modals\AppSettings\UserUpdateLogSettingsModal;
+use App\Services\Slack\Modals\AppSettingsModal;
+use App\Services\Slack\Modals\InitalHelperModal;
 use App\Services\Slack\Modals\MessageRuleView\BotViewModal;
 use App\Services\Slack\Modals\MessageRuleView\ChannelViewModal;
 use App\Services\Slack\Modals\MessageRuleView\ThreadViewModal;
+use App\Services\Slack\Modals\MessageRuleViewModal;
 
 class SlackConstants
 {
@@ -35,6 +39,18 @@ class SlackConstants
     public const VIEW_TRANSITION_USER_JOINED_LOG = 'transition.app_settings.user.joined_log';
     public const ACTIONS_INPUT_USER_JOINED_ENABLED = 'input.user.joined.enabled';
     public const ACTIONS_INPUT_USER_JOINED_CHANNEL = 'input.user.joined.channel';
+
+    // Message Deleted Log
+    public const VIEW_ID_APP_SETTINGS_MESSAGE_DELETE_LOG = 'app_settings.message.deleted_log';
+    public const VIEW_TRANSITION_MESSAGE_DELETE_LOG = 'transition.app_settings.message.deleted_log';
+    public const ACTIONS_INPUT_MESSAGE_DELETE_LOG_ENABLED = 'input.message.deleted_log.enabled';
+    public const ACTIONS_INPUT_MESSAGE_DELETE_LOG_CHANNEL = 'input.message.deleted_log.channel';
+
+    // Message Update Log
+    public const VIEW_ID_APP_SETTINGS_MESSAGE_UPDATE_LOG = 'app_settings.message.update_log';
+    public const VIEW_TRANSITION_MESSAGE_UPDATE_LOG = 'transition.app_settings.message.update_log';
+    public const ACTIONS_INPUT_MESSAGE_UPDATE_LOG_ENABLED = 'input.message.update_log.enabled';
+    public const ACTIONS_INPUT_MESSAGE_UPDATE_LOG_CHANNEL = 'input.message.update_log.channel';
 
     // Invite Helper
     public const VIEW_TRANSITION_INVITE_HELPER = 'transition.app_settings.invite_helper';
@@ -62,6 +78,11 @@ class SlackConstants
     public const VIEW_TRANSITION_MESSAGE_RULE_VIEW_BOT = 'transition.message_rule_view.bot';
     public const VIEW_ID_MESSAGE_RULE_VIEW_BOT = 'message_rule_view.bot';
 
+    // Initial Helper
+    public const ACTIONS_OPEN_INITIAL_HELPER = 'open.initial_helper';
+    public const VIEW_ID_INITIAL_HELPER = 'initial_helper';
+    public const ACTIONS_INITIAL_HELPER_CREATE_CHANNELS = 'initial_helper.create_channels';
+
     // General Config
     public const ENABLED = 'Active';
     public const ENABLED_EMOJI = ':white_check_mark:';
@@ -70,17 +91,46 @@ class SlackConstants
 
     public const BOOLEAN_TRUE = 'enabled';
 
+    public const ACTIONS = [
 
-    public const VIEW_TRANSITIONS = [
-        self::VIEW_TRANSITION_AUTO_JOIN_NEW_CHANNEL => AutoJoinNewChannelSettingsModal::class,
-        self::VIEW_TRANSITION_USER_UPDATE_LOG => UserUpdateLogSettingsModal::class,
-        self::VIEW_TRANSITION_USER_JOINED_LOG => UserJoinedLogSettingsModal::class,
-        self::VIEW_TRANSITION_INVITE_HELPER => InviteHelperSettingsModal::class,
-        self::VIEW_TRANSITION_MESSAGE_RULE => MessageRuleSettingsModal::class,
+        self::ACTIONS_OPEN_INITIAL_HELPER => [InitalHelperModal::class, 'openModal'],
+        self::ACTIONS_INITIAL_HELPER_CREATE_CHANNELS => [InitalHelperModal::class, 'createChannels'],
 
-        self::VIEW_TRANSITION_MESSAGE_RULE_VIEW_THREAD => ThreadViewModal::class,
-        self::VIEW_TRANSITION_MESSAGE_RULE_VIEW_CHANNEL => ChannelViewModal::class,
-        self::VIEW_TRANSITION_MESSAGE_RULE_VIEW_BOT => BotViewModal::class,
+        self::ACTIONS_OPEN_APP_HOME_APP_SETTINGS => [AppSettingsModal::class, 'openSettingsModal'],
+        self::ACTIONS_OPEN_MESSAGE_RULE_VIEW => [MessageRuleViewModal::class, 'openSettingsModal'],
+
+        self::VIEW_TRANSITION_AUTO_JOIN_NEW_CHANNEL => [AutoJoinNewChannelSettingsModal::class, 'openModalInExistingModal'],
+        self::ACTIONS_INPUT_AUTO_JOIN_NEW_CHANNEL_ENABLED => [AutoJoinNewChannelSettingsModal::class, 'handleInputAutoJoinNewChannelEnabledToggle'],
+
+        self::VIEW_TRANSITION_USER_UPDATE_LOG => [UserUpdateLogSettingsModal::class, 'openModalInExistingModal'],
+        self::ACTIONS_INPUT_USER_UPDATES_ENABLED => [UserUpdateLogSettingsModal::class, 'handleInputEnabledToggle'],
+        self::ACTIONS_INPUT_USER_UPDATES_CHANNEL => [UserUpdateLogSettingsModal::class, 'handleInputChannel'],
+
+        self::VIEW_TRANSITION_USER_JOINED_LOG => [UserJoinedLogSettingsModal::class, 'openModalInExistingModal'],
+        self::ACTIONS_INPUT_USER_JOINED_ENABLED => [UserJoinedLogSettingsModal::class, 'handleInputEnabledToggle'],
+        self::ACTIONS_INPUT_USER_JOINED_CHANNEL => [UserJoinedLogSettingsModal::class, 'handleInputChannel'],
+
+        self::VIEW_TRANSITION_MESSAGE_DELETE_LOG => [MessageDeleteLogSettingsModal::class, 'openModalInExistingModal'],
+        self::ACTIONS_INPUT_MESSAGE_DELETE_LOG_ENABLED => [MessageDeleteLogSettingsModal::class, 'handleInputEnabledToggle'],
+        self::ACTIONS_INPUT_MESSAGE_DELETE_LOG_CHANNEL => [MessageDeleteLogSettingsModal::class, 'handleInputChannel'],
+
+        self::VIEW_TRANSITION_MESSAGE_UPDATE_LOG => [MessageUpdateLogSettingsModal::class, 'openModalInExistingModal'],
+        self::ACTIONS_INPUT_MESSAGE_UPDATE_LOG_ENABLED => [MessageUpdateLogSettingsModal::class, 'handleInputEnabledToggle'],
+        self::ACTIONS_INPUT_MESSAGE_UPDATE_LOG_CHANNEL => [MessageUpdateLogSettingsModal::class, 'handleInputChannel'],
+
+        self::VIEW_TRANSITION_INVITE_HELPER => [InviteHelperSettingsModal::class, 'openModalInExistingModal'],
+        self::ACTIONS_INPUT_INVITE_HELPER_ENABLED => [InviteHelperSettingsModal::class, 'handleInputEnabledToggle'],
+        self::ACTIONS_INPUT_INVITE_HELPER_CHANNEL => [InviteHelperSettingsModal::class, 'handleInputChannel'],
+
+        self::VIEW_TRANSITION_MESSAGE_RULE => [MessageDeleteLogSettingsModal::class, 'openModalInExistingModal'],
+        self::ACTIONS_INPUT_MESSAGE_RULE_ENABLED => [MessageDeleteLogSettingsModal::class, 'handleInputEnabledToggle'],
+        self::ACTIONS_INPUT_MESSAGE_RULE_CHANNEL => [MessageDeleteLogSettingsModal::class, 'handleInputChannel'],
+        self::VIEW_TRANSITION_MESSAGE_RULE_VIEW_THREAD => [ThreadViewModal::class, 'openModalInExistingModal'],
+        self::ACTIONS_MESSAGE_RULE_THREAD_DELETE => [ThreadViewModal::class, 'handleDelete'],
+        self::VIEW_TRANSITION_MESSAGE_RULE_VIEW_CHANNEL => [ChannelViewModal::class, 'openModalInExistingModal'],
+        self::ACTIONS_MESSAGE_RULE_CHANNEL_DELETE => [ChannelViewModal::class, 'handleDelete'],
+        self::VIEW_TRANSITION_MESSAGE_RULE_VIEW_BOT => [BotViewModal::class, 'openModalInExistingModal'],
+        self::ACTIONS_MESSAGE_RULE_BOT_DELETE => [BotViewModal::class, 'handleDelete'],
     ];
 
 }

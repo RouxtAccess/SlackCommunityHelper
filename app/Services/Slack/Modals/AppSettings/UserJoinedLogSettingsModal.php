@@ -75,7 +75,7 @@ class UserJoinedLogSettingsModal {
                         'type' => 'section',
                         'text' =>  [
                             'type' => 'plain_text',
-                            'text' => "If you select a private channel, please be sure to invite the app to the channel",
+                            'text' => "Channel:",
                         ],
                     ],
                     [
