@@ -31,10 +31,12 @@ class ProcessSlackEventMessage implements ShouldQueue
         $this->requestData = $requestData;
         $this->channel = Arr::get($requestData, 'event.channel');
         $this->timestamp = Arr::get($this->requestData, 'event.thread_ts') ?? Arr::get($this->requestData, 'event.ts');
-        $this->slack_user_id = Arr::get($this->requestData, 'event.user', Arr::get($this->requestData, 'event.bot_id', Arr::get($this->requestData, 'event.previous_message.user')));
-        if(!$this->slack_user_id)
+        $this->slack_user_id = Arr::get($this->requestData, 'event.user')
+            ?? Arr::get($this->requestData, 'event.bot_id')
+            ?? Arr::get($this->requestData, 'event.previous_message.user');
+        if(!$this->slack_user_id && !Arr::exists($this->requestData, 'event.previous_message.username'))
         {
-            Log::error("WELP", ['data' => $requestData]);
+            Log::error("Message Processing - Can't Find User!", ['data' => $requestData]);
         }
         $this->slackService = resolve(SlackService::class);
     }

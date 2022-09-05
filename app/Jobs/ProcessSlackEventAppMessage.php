@@ -34,7 +34,7 @@ class ProcessSlackEventAppMessage implements ShouldQueue
         $this->slack_user_id = Arr::get($this->requestData, 'event.user', Arr::get($this->requestData, 'event.bot_id', Arr::get($this->requestData, 'event.previous_message.user')));
         if(!$this->slack_user_id)
         {
-            Log::error("WELP", ['data' => $requestData]);
+            Log::error("AppMention - No User found", ['data' => $requestData]);
         }
         $this->slackService = resolve(SlackService::class);
     }
