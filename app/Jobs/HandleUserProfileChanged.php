@@ -42,7 +42,8 @@ class HandleUserProfileChanged implements ShouldQueue
         $user = User::where('slack_id', $user_id)->first();
         if(!$user)
         {
-            Log::error('handleUserProfileChanged - Failed to find user', ['user_id'=> $user_id, 'newUserData' => $slackUser]);
+            Log::warning('handleUserProfileChanged - This is a new user', ['user_id'=> $user_id, 'newUserData' => $slackUser]);
+            GetSlackInfoForUser::dispatch($user_id);
             return false;
         }
         $user->fill($tempUserData);
