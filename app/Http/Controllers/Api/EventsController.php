@@ -11,7 +11,11 @@ use App\Jobs\ProcessSlackEventMessage;
 use App\Jobs\SendEmojiAddedMessage;
 use App\Jobs\SendEmojiRemovedMessage;
 use App\Jobs\SendEmojiRenamedMessage;
+use App\Jobs\SlackChannelArchived;
 use App\Jobs\SlackChannelCreated;
+use App\Jobs\SlackChannelDeleted;
+use App\Jobs\SlackChannelRenamed;
+use App\Jobs\SlackChannelUnarchived;
 use App\Jobs\TeamJoinedJob;
 use App\Models\Workspace;
 use App\Services\SlackService;
@@ -52,8 +56,36 @@ class EventsController extends Controller
 
     protected function events_channel_created(EventsRequest $request): JsonResponse
     {
-        Log::info('Event-ChannelCreated', ['event' => $request->event]);
+        Log::info('Event-Channel-Created', ['event' => $request->event]);
         SlackChannelCreated::dispatch($request->event);
+
+        return response()->json(['status' => 'success'], 200);
+    }
+    protected function events_channel_deleted(EventsRequest $request): JsonResponse
+    {
+        Log::info('Event-Channel-Deleted', ['event' => $request->event]);
+        SlackChannelDeleted::dispatch($request->event);
+
+        return response()->json(['status' => 'success'], 200);
+    }
+    protected function events_channel_rename(EventsRequest $request): JsonResponse
+    {
+        Log::info('Event-Channel-Renamed', ['event' => $request->event]);
+        SlackChannelRenamed::dispatch($request->event);
+
+        return response()->json(['status' => 'success'], 200);
+    }
+    protected function events_channel_archive(EventsRequest $request): JsonResponse
+    {
+        Log::info('Event-Channel-Archived', ['event' => $request->event]);
+        SlackChannelArchived::dispatch($request->event);
+
+        return response()->json(['status' => 'success'], 200);
+    }
+    protected function events_channel_unarchive(EventsRequest $request): JsonResponse
+    {
+        Log::info('Event-Channel-Unarchived', ['event' => $request->event]);
+        SlackChannelUnarchived::dispatch($request->event);
 
         return response()->json(['status' => 'success'], 200);
     }

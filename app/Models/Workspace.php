@@ -134,6 +134,15 @@ class Workspace extends Model implements Tenant
                         'channel' => null,
                     ],
                 ],
+            'channel_log' =>
+                [
+                    'channel' => null,
+                    'create_enabled' => false,
+                    'delete_enabled' => false,
+                    'rename_enabled' => false,
+                    'archive_enabled' => false,
+                    'unarchive_enabled' => false,
+                ],
             'message' =>
                 [
                     'delete_log' => [
@@ -271,6 +280,70 @@ class Workspace extends Model implements Tenant
                 return ($this->$parameter ?? ($this->data->message->update_log->channel ?? null));
             },
             set: fn (string $value) => ['data->message->update_log->channel' => $value,],
+        );
+    }
+
+    /*****************
+     *  Channel Log
+     *****************/
+    protected function isChannelLogCreateEnabled(): Attribute
+    {
+        return Attribute::make(
+            get: function (){
+                $parameter = 'data->channel_log->create_enabled';
+                return (bool) ($this->$parameter ?? ($this->data->channel_log->create_enabled ?? false));
+            },
+            set: fn (bool $value) => ['data->channel_log->create_enabled' => $value,],
+        );
+    }
+    protected function isChannelLogDeleteEnabled(): Attribute
+    {
+        return Attribute::make(
+            get: function (){
+                $parameter = 'data->channel_log->delete_enabled';
+                return (bool) ($this->$parameter ?? ($this->data->channel_log->delete_enabled ?? false));
+            },
+            set: fn (bool $value) => ['data->channel_log->delete_enabled' => $value,],
+        );
+    }
+    protected function isChannelLogRenameEnabled(): Attribute
+    {
+        return Attribute::make(
+            get: function (){
+                $parameter = 'data->channel_log->rename_enabled';
+                return (bool) ($this->$parameter ?? ($this->data->channel_log->rename_enabled ?? false));
+            },
+            set: fn (bool $value) => ['data->channel_log->rename_enabled' => $value,],
+        );
+    }
+    protected function isChannelLogArchiveEnabled(): Attribute
+    {
+        return Attribute::make(
+            get: function (){
+                $parameter = 'data->channel_log->archive_enabled';
+                return (bool) ($this->$parameter ?? ($this->data->channel_log->archive_enabled ?? false));
+            },
+            set: fn (bool $value) => ['data->channel_log->archive_enabled' => $value,],
+        );
+    }
+    protected function isChannelLogUnarchiveEnabled(): Attribute
+    {
+        return Attribute::make(
+            get: function (){
+                $parameter = 'data->channel_log->unarchive_enabled';
+                return (bool) ($this->$parameter ?? ($this->data->channel_log->unarchive_enabled ?? false));
+            },
+            set: fn (bool $value) => ['data->channel_log->unarchive_enabled' => $value,],
+        );
+    }
+    protected function channelLogChannel(): Attribute
+    {
+        return Attribute::make(
+            get: function (){
+                $parameter = 'data->channel_log->channel';
+                return ($this->$parameter ?? ($this->data->channel_log->channel ?? null));
+            },
+            set: fn (string $value) => ['data->channel_log->channel' => $value,],
         );
     }
 

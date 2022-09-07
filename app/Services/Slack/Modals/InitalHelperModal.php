@@ -137,6 +137,7 @@ class InitalHelperModal {
             ['channel' => 'zmeta-helper-invite-automated', 'attribute' => 'inviteHelperChannel'],
             ['channel' => 'zmeta-helper-delete-log', 'attribute' => 'messageDeleteLogChannel'],
             ['channel' => 'zmeta-helper-update-log', 'attribute' => 'messageUpdateLogChannel'],
+            ['channel' => 'zmeta-helper-channel-log', 'attribute' => 'channelLogChannel', 'private' => false],
             ['channel' => 'zmeta-helper-rule-delete', 'attribute' => 'messageRuleChannel'],
             ['channel' => 'zmeta-helper-user-new', 'attribute' => 'userJoinedChannel'],
             ['channel' => 'zmeta-helper-user-updates', 'attribute' => 'userUpdatedChannel'],
@@ -159,6 +160,7 @@ class InitalHelperModal {
                 user: $user,
                 result: $result,
                 convoInfo: $slackChannelData->first(fn($value) => $value->name === $channelToBeJoined['channel']),
+                private: ($channelToBeJoined['private'] ?? true),
             );
         }
         $this->result = $result;
@@ -198,7 +200,7 @@ class InitalHelperModal {
         }
 
         // Create Channel
-        $channelCreate = $this->slackService->conversationCreate($channel, true);
+        $channelCreate = $this->slackService->conversationCreate($channel, $private);
         if($channelCreate->ok !== true)
         {
             $result[$channel] = ['success' => false, 'message' => "Couldn't create channel [{$channelCreate->error}]"];

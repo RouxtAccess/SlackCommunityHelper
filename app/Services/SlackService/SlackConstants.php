@@ -4,6 +4,7 @@ namespace App\Services\SlackService;
 
 
 use App\Services\Slack\Modals\AppSettings\AutoJoinNewChannelSettingsModal;
+use App\Services\Slack\Modals\AppSettings\ChannelLogSettingsModal;
 use App\Services\Slack\Modals\AppSettings\InviteHelperSettingsModal;
 use App\Services\Slack\Modals\AppSettings\MessageDeleteLogSettingsModal;
 use App\Services\Slack\Modals\AppSettings\MessageRuleSettingsModal;
@@ -46,6 +47,16 @@ class SlackConstants
     public const VIEW_TRANSITION_MESSAGE_DELETE_LOG = 'transition.app_settings.message.deleted_log';
     public const ACTIONS_INPUT_MESSAGE_DELETE_LOG_ENABLED = 'input.message.deleted_log.enabled';
     public const ACTIONS_INPUT_MESSAGE_DELETE_LOG_CHANNEL = 'input.message.deleted_log.channel';
+
+    // Channel Log
+    public const VIEW_ID_APP_SETTINGS_CHANNEL_LOG = 'app_settings.message.channel_log';
+    public const VIEW_TRANSITION_CHANNEL_LOG = 'transition.app_settings.channel_log';
+    public const ACTIONS_INPUT_CHANNEL_LOG_CREATE_ENABLED = 'input.message.channel_log.create.enabled';
+    public const ACTIONS_INPUT_CHANNEL_LOG_DELETE_ENABLED = 'input.message.channel_log.delete.enabled';
+    public const ACTIONS_INPUT_CHANNEL_LOG_RENAME_ENABLED = 'input.message.channel_log.rename.enabled';
+    public const ACTIONS_INPUT_CHANNEL_LOG_ARCHIVE_ENABLED = 'input.message.channel_log.archive.enabled';
+    public const ACTIONS_INPUT_CHANNEL_LOG_UNARCHIVE_ENABLED = 'input.message.channel_log.unarchive.enabled';
+    public const ACTIONS_INPUT_CHANNEL_LOG_CHANNEL = 'input.channel_log.channel';
 
     // Message Update Log
     public const VIEW_ID_APP_SETTINGS_MESSAGE_UPDATE_LOG = 'app_settings.message.update_log';
@@ -110,6 +121,15 @@ class SlackConstants
         self::VIEW_TRANSITION_USER_JOINED_LOG => [UserJoinedLogSettingsModal::class, 'openModalInExistingModal'],
         self::ACTIONS_INPUT_USER_JOINED_ENABLED => [UserJoinedLogSettingsModal::class, 'handleInputEnabledToggle'],
         self::ACTIONS_INPUT_USER_JOINED_CHANNEL => [UserJoinedLogSettingsModal::class, 'handleInputChannel'],
+
+        self::VIEW_TRANSITION_CHANNEL_LOG => [ChannelLogSettingsModal::class, 'openModalInExistingModal'],
+        self::ACTIONS_INPUT_CHANNEL_LOG_CREATE_ENABLED => [ChannelLogSettingsModal::class, 'handleInputCreateEnabledToggle'],
+        self::ACTIONS_INPUT_CHANNEL_LOG_DELETE_ENABLED => [ChannelLogSettingsModal::class, 'handleInputDeleteEnabledToggle'],
+        self::ACTIONS_INPUT_CHANNEL_LOG_RENAME_ENABLED => [ChannelLogSettingsModal::class, 'handleInputRenameEnabledToggle'],
+        self::ACTIONS_INPUT_CHANNEL_LOG_ARCHIVE_ENABLED => [ChannelLogSettingsModal::class, 'handleInputArchiveEnabledToggle'],
+        self::ACTIONS_INPUT_CHANNEL_LOG_UNARCHIVE_ENABLED => [ChannelLogSettingsModal::class, 'handleInputUnarchiveEnabledToggle'],
+        self::ACTIONS_INPUT_CHANNEL_LOG_CHANNEL => [ChannelLogSettingsModal::class, 'handleInputChannel'],
+
 
         self::VIEW_TRANSITION_MESSAGE_DELETE_LOG => [MessageDeleteLogSettingsModal::class, 'openModalInExistingModal'],
         self::ACTIONS_INPUT_MESSAGE_DELETE_LOG_ENABLED => [MessageDeleteLogSettingsModal::class, 'handleInputEnabledToggle'],

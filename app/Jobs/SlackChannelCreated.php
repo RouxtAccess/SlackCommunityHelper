@@ -37,6 +37,20 @@ class SlackChannelCreated implements ShouldQueue
         if(tenant()->isAutoJoinNewChannelsEnabled){
             resolve(SlackService::class)->conversationJoin(Arr::get($this->eventData, 'channel.id'));
         }
+        if(tenant()->isChannelLogCreateEnabled){
+            $this->sendChannelLogMessage();
+        }
+    }
 
+    public function sendChannelLogMessage()
+    {
+        Log::info('SlackChannelCreated - Sending Log Message', ['channel' => Arr::get($this->eventData, 'channel.id')]);
+        resolve(SlackService::class)->sendMessage(
+            conversation: tenant()->channelLogChannel,
+            text: ":seedling: <@" . Arr::get($this->eventData, 'channel.creator') . "> created channel <#" . Arr::get($this->eventData, 'channel.id') ."> with name `". Arr::get($this->eventData, 'channel.name_normalized') ."`",
+            blocks: [],
+            emoji: 'arrow_up',
+            username: config('services.slack.bot_user_name') . ' - New Channel'
+        );
     }
 }

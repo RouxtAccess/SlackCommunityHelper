@@ -40,6 +40,7 @@ class AppSettingsModal {
                 $this->getSettingsHeader(),
                 $this->getUserUpdateSettings(),
                 $this->getUserJoinedSettings(),
+                $this->getChannelLogSettings(),
                 $this->getMessageDeletedSettings(),
                 $this->getMessageUpdatedSettings(),
                 $this->getInviteHelperSettings(),
@@ -169,6 +170,51 @@ class AppSettingsModal {
                     ],
             ],
         ];
+    }
+    public function getChannelLogSettings()
+    {
+        $enabledEmoji = SlackConstants::DISABLED_EMOJI;
+        if(
+            tenant()->isChannelLogCreateEnabled
+            || tenant()->isChannelLogDeleteEnabled
+            || tenant()->isChannelLogRenameEnabled
+            || tenant()->isChannelLogArchiveEnabled
+            || tenant()->isChannelLogUnarchiveEnabled
+        ){
+            $enabledEmoji = SlackConstants::ENABLED_EMOJI;
+        }
+
+            return [
+                [
+                    'type' => 'divider',
+                ],
+                [
+                    'type' => 'header',
+                    'text' =>
+                        [
+                            'type' => 'plain_text',
+                            'text' =>  "{$enabledEmoji} Channel Log",
+                        ]
+                ],
+                [
+                    'type' => 'section',
+                    'text' =>
+                        [
+                            'type' => 'plain_text',
+                            'text' => 'Log various Channel Events',
+                        ],
+                    'accessory' =>
+                        [
+                            'type' => 'button',
+                            'action_id' => SlackConstants::VIEW_TRANSITION_CHANNEL_LOG,
+                            'text' =>
+                                [
+                                    'type' => 'plain_text',
+                                    'text' => 'Config',
+                                ]
+                        ],
+                ],
+            ];
     }
 
     public function getMessageDeletedSettings()

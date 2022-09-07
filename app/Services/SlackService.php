@@ -128,7 +128,7 @@ class SlackService {
     }
 
 
-    public function sendMessage(string $conversation, $text, array $blocks = [], $emoji = 'robot_face', $threadTimestamp = null, $username = null)
+    public function sendMessage(string $conversation, $text, array $blocks = [], $emoji = 'robot_face', $threadTimestamp = null, $username = null) : object
     {
         Log::debug('SlackService - Sending Message...', ['conversation' => $conversation]);
         $endpoint = 'chat.postMessage';
