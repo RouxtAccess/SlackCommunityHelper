@@ -42,7 +42,8 @@ class GetSlackInfoForUser implements ShouldQueue
 
         $userInfo = $slackService->getUserInfo($this->user->slack_id)->user;
 
-        $avatar = $userInfo->profile->image_original ?? $userInfo->user->profile->image_512 ?? $userInfo->user->profile->image_192;
+        #$avatar = $userInfo->profile->image_original ?? $userInfo->profile->image_512 ?? $userInfo->profile->image_192;
+
         $type = User::TYPE_MEMBER;
         if($userInfo->is_owner === true)
         {
