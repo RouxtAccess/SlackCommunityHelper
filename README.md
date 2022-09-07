@@ -6,15 +6,30 @@ This is a Slack app which helps manage your slack workspace better.
 
 It's specifically designed with communities in mind and has a lot of helpful tools which Slack isn't keen to build.
 
-It's hosted over here: < link > 
+It's hosted over here: https://communitybot.rouxtaccess.com/ 
 
 But if you'd rather you data never leave your workspace and you'd prefer to self-host, feel free to go wild!
 
 
 ## Feature List
 
-Coming soon!
-
+ * Logging Events
+   * User Update Log 
+   * User Joined Log
+   * Channel Event Log (Create/Rename/Delete/Archive/Unarchive)
+   * Message Delete Log
+   * Message Update Log
+ * Message Rules
+   * Lock down Threads with allow/deny lists
+   * Lock down Bots to not be allowed to post to certain channels (Like #announcements)
+   * Lock down Channels
+     * Set who can post top level messages
+     * Set who can post thread messages
+   * Log any deletion based on these rules to a specific channel
+ * Other Features
+   * Invite Helper - Slack refuses to allow you to disable invites, this helps mitigate that problem
+   * Auto Join New Channels
+   * More coming soon
 
 ## Contributing
 

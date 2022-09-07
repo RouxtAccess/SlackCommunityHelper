@@ -133,7 +133,7 @@
                             <img src="image/l2/settings.svg" alt="icon">
                             <div class="content-body">
                                 <h5>OpenSource and Improving</h5>
-                                <p>We'd love to do this better, so feel free to log issues or feature requests</p>
+                                <p>We'd love to do this better, so feel free to <a href="https://github.com/RouxtAccess/SlackCommunityHelper">log issues or feature requests</a></p>
                             </div>
                         </div>
                     </div>
