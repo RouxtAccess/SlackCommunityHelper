@@ -22,8 +22,5 @@ Route::get('/', function () {
 
 Route::get('/workspace/register/callback', [LoginController::class, 'addNewSlackWorkspace'])
     ->name('workspace.add');
-Route::get('/workspace/register/success', function () {
-    return view('welcome');
-})
-    ->name('workspace.add.success');
+Route::redirect('/workspace/register/success', '/')->name('workspace.add.success');
 
