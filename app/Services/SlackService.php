@@ -45,7 +45,7 @@ class SlackService {
         $cursor = null;
         while(true)
         {
-            $data = $this->getUserList(limit: $limit);
+            $data = $this->getUserList(limit: $limit, cursor: $cursor);
             if($data->ok === false && $data->error === SlackInternalConstants::API_ERROR_LIMIT_REQUIRED)
             {
                 Log::warning('SlackService - Getting All Users - Dropping limit', ['limit' => $limit]);
