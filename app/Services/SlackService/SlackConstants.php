@@ -12,7 +12,7 @@ use App\Services\Slack\Modals\AppSettings\MessageUpdateLogSettingsModal;
 use App\Services\Slack\Modals\AppSettings\UserJoinedLogSettingsModal;
 use App\Services\Slack\Modals\AppSettings\UserUpdateLogSettingsModal;
 use App\Services\Slack\Modals\AppSettingsModal;
-use App\Services\Slack\Modals\InitalHelperModal;
+use App\Services\Slack\Modals\InitialHelperModal;
 use App\Services\Slack\Modals\MessageRuleView\BotViewModal;
 use App\Services\Slack\Modals\MessageRuleView\ChannelViewModal;
 use App\Services\Slack\Modals\MessageRuleView\ThreadViewModal;
@@ -95,6 +95,7 @@ class SlackConstants
     public const VIEW_ID_INITIAL_HELPER = 'initial_helper';
     public const ACTIONS_INITIAL_HELPER_CREATE_CHANNELS = 'initial_helper.create_channels';
     public const ACTIONS_INITIAL_HELPER_JOIN_CHANNELS = 'initial_helper.join_channels';
+    public const ACTIONS_INITIAL_HELPER_ADD_USERS = 'initial_helper.add_users';
 
     // General Config
     public const ENABLED = 'Active';
@@ -106,9 +107,10 @@ class SlackConstants
 
     public const ACTIONS = [
 
-        self::ACTIONS_OPEN_INITIAL_HELPER => [InitalHelperModal::class, 'openModal'],
-        self::ACTIONS_INITIAL_HELPER_CREATE_CHANNELS => [InitalHelperModal::class, 'createChannels'],
-        self::ACTIONS_INITIAL_HELPER_JOIN_CHANNELS => [InitalHelperModal::class, 'joinAllPublicChannels'],
+        self::ACTIONS_OPEN_INITIAL_HELPER => [InitialHelperModal::class, 'openModal'],
+        self::ACTIONS_INITIAL_HELPER_CREATE_CHANNELS => [InitialHelperModal::class, 'createChannels'],
+        self::ACTIONS_INITIAL_HELPER_JOIN_CHANNELS => [InitialHelperModal::class, 'joinAllPublicChannels'],
+        self::ACTIONS_INITIAL_HELPER_ADD_USERS => [InitialHelperModal::class, 'massUpdateAllUsers'],
 
         self::ACTIONS_OPEN_APP_HOME_APP_SETTINGS => [AppSettingsModal::class, 'openSettingsModal'],
         self::ACTIONS_OPEN_MESSAGE_RULE_VIEW => [MessageRuleViewModal::class, 'openSettingsModal'],

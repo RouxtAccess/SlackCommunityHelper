@@ -2,14 +2,14 @@
 
 namespace App\Services\Slack\Modals;
 
+use App\Jobs\SlackAddAllUsers;
 use App\Jobs\SlackJoinAllPublicChannels;
-use App\Models\BotRule;
 use App\Services\SlackService;
 use App\Services\SlackService\SlackConstants;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
-class InitalHelperModal {
+class InitialHelperModal {
 
     public ?SlackService $slackService;
     private ?array $result = null;
@@ -119,6 +119,32 @@ class InitalHelperModal {
                             [
                                 'type' => 'plain_text',
                                 'text' => 'Join All',
+                            ]
+                    ],
+            ],
+            [
+                'type' => 'header',
+                'text' =>
+                    [
+                        'type' => 'plain_text',
+                        'text' => "Initialize Users",
+                    ]
+            ],
+            [
+                'type' => 'section',
+                'text' =>
+                    [
+                        'type' => 'plain_text',
+                        'text' => "This will update CommunityBot's knowledge of all of your users. Without this, we don't know what the base name/info for each user is when we get a username edit",
+                    ],
+                'accessory' =>
+                    [
+                        'type' => 'button',
+                        'action_id' => SlackConstants::ACTIONS_INITIAL_HELPER_ADD_USERS,
+                        'text' =>
+                            [
+                                'type' => 'plain_text',
+                                'text' => 'Process',
                             ]
                     ],
             ],
@@ -245,6 +271,11 @@ class InitalHelperModal {
     public function joinAllPublicChannels(User $user, object $payload)
     {
         SlackJoinAllPublicChannels::dispatch();
+    }
+
+    public function massUpdateAllUsers(User $user, object $payload)
+    {
+        SlackAddAllUsers::dispatch();
     }
 
 }

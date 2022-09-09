@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Requests\Api\EventsRequest;
+use App\Services\SlackService\SlackInternalConstants;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -34,6 +35,44 @@ class SlackService {
         $payload = [
             'user' => $username,
         ];
+
+        return $this->get($endpoint, $payload);
+    }
+    public function getUserAll(int $limit = 1000): Collection
+    {
+        Log::debug('SlackService - Getting All Users...');
+        $collection = collect();
+        $cursor = null;
+        while(true)
+        {
+            $data = $this->getUserList(limit: $limit);
+            if($data->ok === false && $data->error === SlackInternalConstants::API_ERROR_LIMIT_REQUIRED)
+            {
+                Log::warning('SlackService - Getting All Users - Dropping limit', ['limit' => $limit]);
+                $limit = (int) ($limit/2);
+                continue;
+            }
+            foreach($data->members as $user)
+            {
+                $collection->push($user);
+            }
+            $cursor = $data?->response_metadata?->next_cursor ?? null;
+            if(!$cursor)
+            {
+                break;
+            }
+        }
+        return $collection;
+    }
+    public function getUserList(int $limit = 1000, string $cursor = null) : \stdClass
+    {
+        Log::debug('SlackService - Getting User List...');
+        $endpoint = 'users.list';
+        $payload = [
+            'limit' => $limit
+        ];
+        if($cursor !== null)
+            $payload['cursor'] = $cursor;
 
         return $this->get($endpoint, $payload);
     }
@@ -500,29 +539,7 @@ class SlackService {
     }
 
 
-    public static function getUserList(int $limit = 1000, string $cursor = null) : \stdClass
-    {
-        Log::info('SlackService - Getting User List...');
 
-        $token = config('slack.bot_oauth_access');
-        $apiEndpoint = config('slack.api_endpoint');
-        $endpoint = 'users.list';
-        $payload = [
-            'limit' => $limit
-        ];
-        if($cursor !== null)
-            $payload['cursor'] = $cursor;
-
-        $response = Http::withHeaders(['Authorization' => 'Bearer ' . $token])->get($apiEndpoint.$endpoint, $payload)->object();
-        if($response->ok !==true)
-        {
-            Log::error('SlackService - Getting User List Failed',  [
-                'limit' => $limit,
-                'response_data' => $response,
-            ]);
-        }
-        return $response;
-    }
 
     public static function getConversationsList(bool $excludeArchived = true, string $types ="public_channel,private_channel", int $limit = 1000, string $cursor = null) : \stdClass
     {

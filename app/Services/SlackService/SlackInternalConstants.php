@@ -15,4 +15,6 @@ class SlackInternalConstants
     public const EVENT_SUBTYPE_MESSAGE_MESSAGE_CHANGED = 'message_changed';
     public const EVENT_SUBTYPE_EVENT_EVENT_CALLBACK = 'event_callback';
     public const EVENT_SUBTYPE_EVENT_BOT_MESSAGE = 'bot_message';
+
+    public const API_ERROR_LIMIT_REQUIRED = 'limit_required';
 }
