@@ -40,14 +40,16 @@ class SlackJoinAllPublicChannels implements ShouldQueue
         $slackService = resolve(SlackService::class);
 
         $channels = $slackService->getConversationAll(types: 'public_channel');
+        $count = 0;
         foreach ($channels as $channel)
         {
             if($channel->is_member === false)
             {
                 $slackService->conversationJoin($channel->id);
+                $count++;
             }
         }
-        Log::info('SlackJoinAllPublicChannels - Joined All Channels!');
+        Log::info('SlackJoinAllPublicChannels - Joined All Channels!', ['count' => $count]);
 
     }
 }
