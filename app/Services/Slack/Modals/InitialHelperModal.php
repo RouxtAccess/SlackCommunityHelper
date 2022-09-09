@@ -270,11 +270,13 @@ class InitialHelperModal {
 
     public function joinAllPublicChannels(User $user, object $payload)
     {
+        Log::info('InitialHelperModal - Joining all Channels');
         SlackJoinAllPublicChannels::dispatch();
     }
 
     public function massUpdateAllUsers(User $user, object $payload)
     {
+        Log::info('InitialHelperModal - Updating all Users');
         SlackAddAllUsers::dispatch();
     }
 
