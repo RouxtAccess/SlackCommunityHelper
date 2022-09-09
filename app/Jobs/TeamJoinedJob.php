@@ -35,8 +35,9 @@ class TeamJoinedJob implements ShouldQueue
 
     public function handle()
     {
+        $slackService = resolve(SlackService::class);
         // Get full user data
-        $userData = SlackService::getUserInfo($this->slackUserId);
+        $userData = $slackService->getUserInfo($this->slackUserId);
 
         // Store new User
         User::create([
@@ -67,7 +68,7 @@ class TeamJoinedJob implements ShouldQueue
                 ]
             ];
             $emoji = 'bust_in_silhouette';
-            resolve(SlackService::class)->sendMessage($this->channel, $message, $blocks, $emoji, null, 'New User Created!');
+            $slackService->sendMessage($this->channel, $message, $blocks, $emoji, null, 'New User Created!');
         }
 
     }
