@@ -2,6 +2,7 @@
 
 namespace App\Services\Slack\Modals;
 
+use App\Jobs\SlackJoinAllPublicChannels;
 use App\Models\BotRule;
 use App\Services\SlackService;
 use App\Services\SlackService\SlackConstants;
@@ -92,6 +93,32 @@ class InitalHelperModal {
                             [
                                 'type' => 'plain_text',
                                 'text' => 'Create',
+                            ]
+                    ],
+            ],
+            [
+                'type' => 'header',
+                'text' =>
+                    [
+                        'type' => 'plain_text',
+                        'text' => "Join All Public Channels",
+                    ]
+            ],
+            [
+                'type' => 'section',
+                'text' =>
+                    [
+                        'type' => 'plain_text',
+                        'text' => "This will make the app join all public channels, it's required if you want message updates from that channel (delete/edit) or if you want to utilize tools like the Message Rules.",
+                    ],
+                'accessory' =>
+                    [
+                        'type' => 'button',
+                        'action_id' => SlackConstants::ACTIONS_INITIAL_HELPER_JOIN_CHANNELS,
+                        'text' =>
+                            [
+                                'type' => 'plain_text',
+                                'text' => 'Join All',
                             ]
                     ],
             ],
@@ -214,4 +241,10 @@ class InitalHelperModal {
         $result[$channel] = ['success' => true, 'message' => 'New Channel Created & Joined'];
         $this->slackService->conversationInvite($channelCreate->channel->id, $user);
     }
+
+    public function joinAllPublicChannels(User $user, object $payload)
+    {
+        SlackJoinAllPublicChannels::dispatch();
+    }
+
 }

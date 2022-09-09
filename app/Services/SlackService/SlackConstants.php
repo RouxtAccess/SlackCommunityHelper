@@ -94,6 +94,7 @@ class SlackConstants
     public const ACTIONS_OPEN_INITIAL_HELPER = 'open.initial_helper';
     public const VIEW_ID_INITIAL_HELPER = 'initial_helper';
     public const ACTIONS_INITIAL_HELPER_CREATE_CHANNELS = 'initial_helper.create_channels';
+    public const ACTIONS_INITIAL_HELPER_JOIN_CHANNELS = 'initial_helper.join_channels';
 
     // General Config
     public const ENABLED = 'Active';
@@ -107,6 +108,7 @@ class SlackConstants
 
         self::ACTIONS_OPEN_INITIAL_HELPER => [InitalHelperModal::class, 'openModal'],
         self::ACTIONS_INITIAL_HELPER_CREATE_CHANNELS => [InitalHelperModal::class, 'createChannels'],
+        self::ACTIONS_INITIAL_HELPER_JOIN_CHANNELS => [InitalHelperModal::class, 'joinAllPublicChannels'],
 
         self::ACTIONS_OPEN_APP_HOME_APP_SETTINGS => [AppSettingsModal::class, 'openSettingsModal'],
         self::ACTIONS_OPEN_MESSAGE_RULE_VIEW => [MessageRuleViewModal::class, 'openSettingsModal'],
