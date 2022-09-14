@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Api\EventsController;
 use App\Http\Controllers\Api\InteractivityController;
-use Illuminate\Http\Request;
+use App\Http\Middleware\VerifySlackRequestMiddleware;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
-Route::post('/slack/interactivity', [InteractivityController::class, 'interactiveActions'])->name('api.slack.interactivity');
-Route::post('/slack/events', [EventsController::class, 'action'])->name('api.slack.events');
+Route::group(['middleware' => [VerifySlackRequestMiddleware::class]], function () {
+    Route::post('/slack/interactivity', [InteractivityController::class, 'interactiveActions'])->name('api.slack.interactivity');
+    Route::post('/slack/events', [EventsController::class, 'action'])->name('api.slack.events');
+});
 
