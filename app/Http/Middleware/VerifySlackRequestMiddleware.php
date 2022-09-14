@@ -15,7 +15,8 @@ class VerifySlackRequestMiddleware
         $slackSignature = $request->header('X-Slack-Signature');
         if(!$slackSignature)
         {
-            Log::warning('VerifySlackRequestMiddleware - Unable to find slack request header', ['request_data' => $request->all(), 'headers' => $request->headers]);
+            Log::warning('VerifySlackRequestMiddleware - Unable to find slack request header', ['request_content' => $request->getContent(), 'headers' => $request->headers]);
+            return $next($request);
             abort(401, 'No X-Slack-Signature Found!');
         }
 
@@ -29,10 +30,11 @@ class VerifySlackRequestMiddleware
 
         if($slackSignature !== $ourSignature)
         {
-            Log::warning('VerifySlackRequestMiddleware - Failed to verify X-Slack-Signature.', ['request_data' => $request->all(), 'headers' => $request->headers]);
+            Log::warning('VerifySlackRequestMiddleware - Failed to verify X-Slack-Signature.', ['request_content' => $request->getContent(), 'headers' => $request->headers]);
+            return $next($request);
             abort(401, 'Failed to verify X-Slack-Signature.');
         }
-
+        Log::info('VerifySlackRequestMiddleware - Success');
         return $next($request);
     }
 }
