@@ -34,6 +34,7 @@ return [
     'slack' => [
         'client_id' => env('SLACK_CLIENT_ID'),
         'client_secret' => env('SLACK_CLIENT_SECRET'),
+        'signing_secret' => env('SLACK_SIGNING_SECRET'),
         'redirect' => env('SLACK_REDIRECT_CALLBACK_URL', env('APP_URL') . '/login/slack/callback'),
         'bot_user_name' => 'SlackCommunityBot',
         'bot_id' => env('SLACK_BOT_ID', 'B0404RGCY82'),

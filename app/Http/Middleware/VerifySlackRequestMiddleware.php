@@ -26,7 +26,7 @@ class VerifySlackRequestMiddleware
             $request->getContent(),
         ]);
 
-        $ourSignature = SlackInternalConstants::SIGNING_SIGNATURE_VERSION . '=' . hash_hmac('sha256', $baseString, config('services.slack.client_secret'));
+        $ourSignature = SlackInternalConstants::SIGNING_SIGNATURE_VERSION . '=' . hash_hmac('sha256', $baseString, config('services.slack.signing_secret'));
 
         if($slackSignature !== $ourSignature)
         {
