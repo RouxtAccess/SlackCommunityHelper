@@ -62,7 +62,7 @@
                                 </p>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-6 flex-y-center ">
-                                <a href="https://slack.com/oauth/v2/authorize?client_id=1908518842130.4017448321297&scope=app_mentions:read,channels:history,channels:join,channels:read,chat:write,chat:write.customize,groups:history,groups:read,reactions:read,team:read,usergroups:read,users:read,channels:manage,groups:write&user_scope=">
+                                <a href="https://slack.com/oauth/v2/authorize?client_id=1908518842130.4017448321297&scope=app_mentions:read,channels:history,channels:join,channels:manage,channels:read,chat:write,chat:write.customize,groups:history,groups:read,groups:write,reactions:read,team:read,usergroups:read,users:read,reactions:write&user_scope=">
                                     <img alt="Add to Slack" height="60" width="208" src="https://platform.slack-edge.com/img/add_to_slack.png" srcSet="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" />
                                 </a>
                             </div>
