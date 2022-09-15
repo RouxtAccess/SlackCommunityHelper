@@ -429,10 +429,27 @@ class ProcessSlackEventMessage implements ShouldQueue
         }
         $inviteeEmail = $matches[1] ?? 'unknown';
 
+        $accountType = 'No Account Type Specified';
         $reasonForRequest = 'No Reason Specified';
-        if(Arr::get($this->requestData, 'event.attachments.1.text', false) !== false)
+        $attachmentOneText = Arr::get($this->requestData, 'event.attachments.1.text', false);
+        if($attachmentOneText !== false)
         {
-            $reasonForRequest = str_replace('*Reason for Request*:', '', Arr::get($this->requestData, 'event.attachments.1.text'));
+            if(str_contains($attachmentOneText, '*Account type*:'))
+            {
+                $accountType = str_replace('*Account type*:', '', $attachmentOneText);
+            }
+            elseif(str_contains($attachmentOneText, '*Reason for Request*:'))
+            {
+                $reasonForRequest = str_replace('*Reason for Request*:', '', $attachmentOneText);
+            }
+        }
+        $attachmentTwoText = Arr::get($this->requestData, 'event.attachments.2.text', false);
+        if($attachmentTwoText !== false)
+        {
+            if(str_contains($attachmentTwoText, '*Reason for Request*:'))
+            {
+                $reasonForRequest = str_replace('*Reason for Request*:', '', $attachmentTwoText);
+            }
         }
 
         Log::debug('ProcessSlackEventMessage - HandleInvite Message - Found message info', ['user' => $inviter, 'email' => $inviteeEmail, 'reason' => $reasonForRequest]);
@@ -459,7 +476,7 @@ class ProcessSlackEventMessage implements ShouldQueue
                 'text' =>
                     [
                         'type' => "mrkdwn",
-                        'text' => "We sent the message to the user :)\nuser_id: {$inviter}\ninvitee_email: {$inviteeEmail}\nreason: {$reasonForRequest}",
+                        'text' => "We sent the message to the user :)\nUser: <@{$inviter}>\nInvitee Email: {$inviteeEmail}\nAccount Type: {$accountType}\nReason: {$reasonForRequest}",
                     ]
             ],
         ];
