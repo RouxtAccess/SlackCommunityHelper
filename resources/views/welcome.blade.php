@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="slack-app-id" content="A040HD69F8R">
     <title>CommunityBot</title>
     <link rel="shortcut icon" href="image/favicon.png" type="image/x-icon">
     <!-- Bootstrap , fonts & icons  -->
