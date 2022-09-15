@@ -28,7 +28,7 @@ class GetSlackInfoForUser implements ShouldQueue
     public function handle()
     {
         tenant()->fresh();
-        Log::withContext(['team_id' => tenant()->team_id, ]);
+        Log::withContext(['team_id' => tenant()->team_id, 'user_slack_id' => $this->slack_user_id]);
 
         if(!$this->user){
             $this->user = User::firstOrCreate(['slack_id' => $this->slack_user_id],
@@ -40,7 +40,13 @@ class GetSlackInfoForUser implements ShouldQueue
 
         $slackService = resolve(SlackService::class);
 
-        $userInfo = $slackService->getUserInfo($this->user->slack_id)->user;
+        $userResponse = $slackService->getUserInfo($this->user->slack_id);
+        if($userResponse->ok !== true)
+        {
+            Log::warning("GetSlackEmailForUser - Couldn't find slack user, this was probably a bot account");
+            return;
+        }
+        $userInfo = $userResponse->user;
 
         #$avatar = $userInfo->profile->image_original ?? $userInfo->profile->image_512 ?? $userInfo->profile->image_192;
 
