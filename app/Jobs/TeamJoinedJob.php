@@ -30,7 +30,7 @@ class TeamJoinedJob implements ShouldQueue
     public function __construct(string $slackUserId)
     {
         $this->slackUserId = $slackUserId;
-        $this->enabled = tenant()->isUserNewUserJoinedEnabled;
+        $this->enabled = tenant()->isUserJoinedEnabled;
         $this->channel = tenant()->userJoinedChannel;
     }
 
