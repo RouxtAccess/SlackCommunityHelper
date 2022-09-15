@@ -36,6 +36,8 @@ class HandleSlackAppHomeOpened implements ShouldQueue
      */
     public function handle()
     {
+        tenant()->fresh();
+
         $slack_id = Arr::get($this->data, 'event.user');
 
         $user = User::firstOrCreate(['slack_id' => $slack_id],
