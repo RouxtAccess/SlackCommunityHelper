@@ -51,11 +51,11 @@ class GetSlackInfoForUser implements ShouldQueue
         #$avatar = $userInfo->profile->image_original ?? $userInfo->profile->image_512 ?? $userInfo->profile->image_192;
 
         $type = User::TYPE_MEMBER;
-        if($userInfo->is_owner === true)
+        if($userInfo?->is_owner === true)
         {
             $type = User::TYPE_WORKSPACE_OWNER;
         }
-        elseif ($userInfo->is_admin === true)
+        elseif ($userInfo?->is_admin === true)
         {
             $type = User::TYPE_WORKSPACE_ADMIN;
         }

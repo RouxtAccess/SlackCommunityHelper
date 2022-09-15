@@ -356,7 +356,7 @@ class SlackService {
         $response = Http::withHeaders(['Authorization' => 'Bearer ' . $this->bot_oauth_access])
             ->get($this->apiEndpoint.$endpoint, $payload)
             ->object();
-        if($response->ok !==true)
+        if($response->ok !== true)
         {
             Log::error('SlackService - Unsuccessful GET Request',  [
                 'endpoint' => $endpoint,
