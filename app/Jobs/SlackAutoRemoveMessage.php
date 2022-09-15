@@ -43,6 +43,7 @@ class SlackAutoRemoveMessage implements ShouldQueue
 
     public function handle()
     {
+        tenant()->fresh();
         Log::withContext(
             [
                 'team_id' => tenant()->team_id,
