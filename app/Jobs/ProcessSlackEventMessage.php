@@ -36,7 +36,8 @@ class ProcessSlackEventMessage implements ShouldQueue
             ?? Arr::get($this->requestData, 'event.previous_message.user');
         if(!$this->slack_user_id && !Arr::exists($this->requestData, 'event.previous_message.username'))
         {
-            Log::error("Message Processing - Can't Find User!", ['data' => $requestData]);
+            Log::debug("Message Processing - Not a relevant Message!", ['data' => $requestData]);
+            abort(200);
         }
         $this->slackService = resolve(SlackService::class);
     }
