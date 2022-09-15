@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 
 class TeamJoinedJob implements ShouldQueue
 {
@@ -35,14 +36,18 @@ class TeamJoinedJob implements ShouldQueue
 
     public function handle()
     {
+        tenant()->fresh();
+        Log::withContext(['team_id' => tenant()->team_id, ]);
         $slackService = resolve(SlackService::class);
+
+
         // Get full user data
         $userData = $slackService->getUserInfo($this->slackUserId);
 
+        Log::info('TeamJoinedJob - New user joined!', ['slack_user_id' => $userData->user->id]);
         // Store new User
         User::create([
             'name' => $userData->user->real_name ?? $userData->user->name,
-            'email' => $userData->user->profile->email,
             'type' => User::TYPE_MEMBER,
             'slack_id' => $userData->user->id,
             'slack_nickname' => $userData->user->profile->display_name,
@@ -51,7 +56,7 @@ class TeamJoinedJob implements ShouldQueue
 
         if($this->enabled)
         {
-            $message = "New User: @{$userData->user->name} | {$userData->user->real_name} | {$userData->user->profile->email}";
+            $message = "New User: @{$userData->user->name} | {$userData->user->real_name}";
             $blocks = [
                 [
                     "type" => "section",
@@ -59,10 +64,6 @@ class TeamJoinedJob implements ShouldQueue
                         [
                             "type" => "mrkdwn",
                             "text" => ":heavy_plus_sign: *{$userData->user->real_name}* <@{$userData->user->name}>",
-                        ],
-                        [
-                            "type" => "mrkdwn",
-                            "text" => ":email: *Email:* {$userData->user->profile->email}"
                         ],
                     ]
                 ]
