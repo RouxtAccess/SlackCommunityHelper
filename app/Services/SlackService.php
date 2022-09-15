@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Log;
 
 class SlackService {
 
-    protected $apiEndpoint;
-    protected $bot_oauth_access;
+    public $apiEndpoint;
+    public $bot_oauth_access;
 
 
     public function __construct()
