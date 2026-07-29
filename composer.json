@@ -14,6 +14,7 @@
         "laravel/horizon": "^5.48",
         "laravel/socialite": "^5.29",
         "laravel/tinker": "^3.0.2",
+        "rouxtaccess/laravel-cloudwatch": "^2.0",
         "socialiteproviders/manager": "^4.9.2",
         "stancl/tenancy": "^3.10"
     },

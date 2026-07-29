@@ -54,8 +54,13 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily'],
+            'channels' => explode(',', (string) env('LOG_STACK', 'daily')),
             'ignore_exceptions' => false,
+        ],
+
+        'cloudwatch' => [
+            'driver' => 'cloudwatch',
+            'level' => env('LOG_CLOUDWATCH_LEVEL', 'info'),
         ],
 
         'single' => [
