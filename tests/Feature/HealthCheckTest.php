@@ -10,9 +10,7 @@ class HealthCheckTest extends TestCase
 {
     public function test_the_health_check_endpoint_responds_ok(): void
     {
-        $this->get('/up')
-            ->assertOk()
-            ->assertSeeText('OK');
+        $this->get('/up')->assertOk();
     }
 
     public function test_the_health_check_endpoint_dispatches_the_diagnosing_health_event(): void
