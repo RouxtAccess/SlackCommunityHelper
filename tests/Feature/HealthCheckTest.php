@@ -23,4 +23,22 @@ class HealthCheckTest extends TestCase
 
         Event::assertDispatched(DiagnosingHealth::class);
     }
+
+    public function test_the_health_check_endpoint_answers_json_requests(): void
+    {
+        $this->getJson('/up')
+            ->assertOk()
+            ->assertJson(['status' => 'up']);
+    }
+
+    public function test_the_health_check_endpoint_stays_available_during_maintenance_mode(): void
+    {
+        $this->artisan('down');
+
+        try {
+            $this->get('/up')->assertOk();
+        } finally {
+            $this->artisan('up');
+        }
+    }
 }
