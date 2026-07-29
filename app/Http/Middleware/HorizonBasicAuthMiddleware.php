@@ -4,26 +4,36 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class HorizonBasicAuthMiddleware
 {
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        $authenticationHasPassed = false;
+        $expectedUsername = config('horizon.basic_auth.username');
+        $expectedPassword = config('horizon.basic_auth.password');
 
-        if ($request->header('PHP_AUTH_USER', null) && $request->header('PHP_AUTH_PW', null)) {
-            $username = $request->header('PHP_AUTH_USER');
-            $password = $request->header('PHP_AUTH_PW');
-
-            if ($username === config('horizon.basic_auth.username') && $password === config('horizon.basic_auth.password')) {
-                $authenticationHasPassed = true;
-            }
+        if (blank($expectedUsername)) {
+            abort(Response::HTTP_FORBIDDEN);
         }
 
-        if ($authenticationHasPassed === false) {
-            return response()->make('Invalid credentials.', 401, ['WWW-Authenticate' => 'Basic']);
+        if (blank($expectedPassword)) {
+            abort(Response::HTTP_FORBIDDEN);
+        }
+
+        if (! hash_equals($expectedUsername, (string) $request->getUser())) {
+            return $this->requestCredentials();
+        }
+
+        if (! hash_equals($expectedPassword, (string) $request->getPassword())) {
+            return $this->requestCredentials();
         }
 
         return $next($request);
+    }
+
+    protected function requestCredentials(): Response
+    {
+        return response('Invalid credentials.', Response::HTTP_UNAUTHORIZED, ['WWW-Authenticate' => 'Basic']);
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Api\EventsController;
-use App\Http\Controllers\Api\InteractivityController;
 use App\Http\Controllers\Auth\LoginController;
+use Illuminate\Foundation\Events\DiagnosingHealth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,7 +20,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/up', function () {
+    Event::dispatch(new DiagnosingHealth);
+
+    return response('OK');
+})->name('health');
+
 Route::get('/workspace/register/callback', [LoginController::class, 'addNewSlackWorkspace'])
     ->name('workspace.add');
 Route::redirect('/workspace/register/success', '/')->name('workspace.add.success');
-
