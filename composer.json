@@ -19,6 +19,7 @@
         "stancl/tenancy": "^3.10"
     },
     "require-dev": {
+        "brianium/paratest": "^7.8",
         "fakerphp/faker": "^1.24.1",
         "laravel/pint": "^1.25.1",
         "laravel/sail": "^1.46.0",
